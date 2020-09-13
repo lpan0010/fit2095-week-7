@@ -84,7 +84,10 @@ module.exports = {
     },
     deleteBetween: function (req, res) {
         Movie.deleteMany(
-            { year: { $gte: req.body.year1 }, year: { $lte: req.body.year2 } },
+            {
+                year: { $gte: parseInt(req.body.year1) },
+                year: { $lte: parseInt(req.body.year2) },
+            },
             function (err, movies) {
                 if (err) return res.status(400).json(err);
                 res.json(movies);
