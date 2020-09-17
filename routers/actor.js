@@ -3,15 +3,35 @@ const Actor = require("../models/actor");
 const Movie = require("../models/movie");
 module.exports = {
     getAll: function (req, res) {
-        Actor.find({})
-            .populate("movies")
-            .exec(function (err, actors) {
-                if (err) {
-                    return res.status(404).json(err);
-                } else {
-                    res.json(actors);
-                }
-            });
+        if (req.query.min_age && req.query.max_age) {
+            const min_age = parseInt(req.query.min_age);
+            const max_age = parseInt(req.query.max_age);
+
+            let min_year = parseInt(new Date().getFullYear() - min_age);
+            let max_year = parseInt(new Date().getFullYear() - max_age);
+            console.log(min_year, max_year);
+            Actor.find({})
+                .where("bYear")
+                .gte(max_year)
+                .lte(min_year)
+                .exec(function (err, actors) {
+                    if (err) {
+                        return res.status(404).json(err);
+                    } else {
+                        res.json(actors);
+                    }
+                });
+        } else {
+            Actor.find({})
+                .populate("movies")
+                .exec(function (err, actors) {
+                    if (err) {
+                        return res.status(404).json(err);
+                    } else {
+                        res.json(actors);
+                    }
+                });
+        }
     },
     createOne: function (req, res) {
         let newActorDetails = req.body;
